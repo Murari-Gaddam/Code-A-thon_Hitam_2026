@@ -6,7 +6,6 @@ df = pd.read_csv("predictions.csv")
 
 random.seed(42)
 
-# Generate simulated private network endpoints
 source_ips = [
     f"192.168.1.{random.randint(10, 250)}"
     for _ in range(len(df))
@@ -17,7 +16,6 @@ destination_ips = [
     for _ in range(len(df))
 ]
 
-# Generate timestamps
 start = datetime.now()
 
 timestamps = [
@@ -25,7 +23,6 @@ timestamps = [
     for i in range(len(df))
 ]
 
-# Confidence as percentage
 confidence = (
     df["confidence"]
     .fillna(0)
