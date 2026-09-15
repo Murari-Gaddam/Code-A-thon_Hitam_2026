@@ -8,13 +8,10 @@ df = pd.read_csv(DATASET)
 
 print(f"Loaded {len(df)} rows")
 
-# Keep the ground-truth label separately
 true_labels = df["Label"].copy()
 
-# Remove label before sending to detector
 X = df.drop(columns=["Label"])
 
-# Initialize detector
 detector = IntrusionDetector()
 
 print("\nRunning predictions...")
@@ -36,13 +33,10 @@ for i in range(len(X)):
             "stage_1": "error"
         })
 
-# Convert results to DataFrame
 results_df = pd.DataFrame(results)
 
-# Add ground truth
 results_df["true_label"] = true_labels.values
 
-# Save
 results_df.to_csv("predictions.csv", index=False)
 
 print("\n========================================")
