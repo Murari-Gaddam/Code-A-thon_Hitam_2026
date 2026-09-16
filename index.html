@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>justdemo</title>
+  
+  <!-- Typography: Poppins (Only font used throughout system) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Universal Top System Header Bar -->
+  <header class="nids-header" role="banner">
+    <div class="header-left">
+      <div class="brand-cluster" id="brand-home-link" title="Return to Ingestion Portal" style="cursor: pointer;">
+        <div class="brand-logo-hex">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 2 17 12 22 22 17 22 7 12 2" />
+            <line x1="12" y1="22" x2="12" y2="12" />
+            <polyline points="2 7 12 12 22 7" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">justdemo</div>
+        </div>
+      </div>
+
+      <!-- Button to switch/return to ingestion view when inside dashboard -->
+      <button id="nav-ingestion-btn" class="nav-back-btn hidden" title="Change Traffic Log Source">
+        <span class="btn-arrow">&#x2190;</span>
+        <span>INGEST NEW DATA</span>
+      </button>
+    </div>
+
+    <div class="header-right">
+      <!-- Live millisecond UTC clock -->
+      <div class="header-widget utc-clock-box">
+        <span class="widget-label">SYSTEM UTC</span>
+        <span id="utc-clock" class="widget-value mono">00:00:00.000 UTC</span>
+      </div>
+
+      <!-- Live Packets Taken Counter (Active in Dashboard) -->
+      <div class="header-widget packets-box" id="header-packets-widget">
+        <span class="widget-label">NUMBER OF PACKETS TAKEN</span>
+        <span id="packet-counter" class="widget-value mono counter-glow">0</span>
+      </div>
+
+      <!-- Quarantined Hosts Count Badge -->
+      <button id="quarantine-btn" class="quarantine-pill-btn" title="View Quarantined Host Nodes">
+        <span class="quarantine-icon">&#x26D4;</span>
+        <span>ISOLATED:</span>
+        <span id="quarantine-count" class="mono count-number">0</span>
+      </button>
+
+      <!-- Clean Manual Dark/Light Mode Toggle Switch -->
+      <div class="theme-toggle-container">
+        <label class="theme-toggle-switch" for="theme-checkbox" title="Toggle Dark / Light Mode">
+          <input type="checkbox" id="theme-checkbox" aria-label="Toggle Dark or Light Mode">
+          <span class="theme-slider">
+            <span class="theme-slider-text dark-text">DARK</span>
+            <span class="theme-slider-thumb"></span>
+            <span class="theme-slider-text light-text">LIGHT</span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       VIEW 1: START NETWORK ANALYSIS (INITIAL INGESTION LANDING PAGE)
+       ========================================================================= -->
+  <section id="view-ingestion" class="ingestion-portal-view" aria-label="Start Network Analysis">
+    <div class="portal-container">
+      
+      <!-- Title Block -->
+      <div class="portal-title-block">
+        <h1 class="portal-heading">Start Network Analysis</h1>
+        <p class="portal-subtitle">Provide network traffic data to detect suspicious activity and classify potential attacks.</p>
+      </div>
+
+      <!-- Main Ingestion Cards Grid -->
+      <div class="portal-cards-grid">
+        
+        <!-- Card 1: Upload CSV Log -->
+        <div class="portal-card upload-card">
+          <div class="portal-card-header">
+            <div class="portal-card-icon-wrap">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div class="portal-card-titles">
+              <h2 class="portal-card-title">Upload CSV Log</h2>
+              <p class="portal-card-desc">Upload a CSV file containing network traffic records for analysis.</p>
+            </div>
+          </div>
+
+          <!-- Drag and Drop Dropzone -->
+          <div id="csv-dropzone" class="dropzone-area" tabindex="0" role="button" aria-label="Upload CSV File">
+            <input type="file" id="csv-file-input" accept=".csv,.txt,.log" class="hidden-file-input">
+            <div class="dropzone-icon">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </div>
+            <div class="dropzone-prompt">Choose CSV file</div>
+            <div class="dropzone-sub">or drag and drop here</div>
+            <div id="selected-file-label" class="selected-file-text mono">No file selected</div>
+          </div>
+
+          <!-- Single Demo Sample Button -->
+          <div style="margin-top: 6px;">
+            <button id="load-sample-csv-btn" class="preset-pill-btn" type="button" style="width: 100%; justify-content: center; padding: 9px 12px; font-weight: 700;">
+              <span>&#x25C6; LOAD SAMPLE NETWORK DATASET</span>
+            </button>
+          </div>
+
+          <!-- Main Upload CTA Button -->
+          <button id="btn-analyze-csv" class="portal-cta-btn" type="button" disabled>
+            <span id="btn-analyze-text">Analyze Uploaded CSV</span>
+          </button>
+        </div>
+
+        <!-- Card 2: Connect to Server -->
+        <div class="portal-card connect-card">
+          <div class="portal-card-header">
+            <div class="portal-card-icon-wrap">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div class="portal-card-titles">
+              <h2 class="portal-card-title">Connect to Server</h2>
+              <p class="portal-card-desc">Connect to a remote server and retrieve network logs for analysis.</p>
+            </div>
+          </div>
+
+          <!-- Remote Connection Form -->
+          <form id="server-connect-form" class="server-form" onsubmit="return false;">
+            <div class="form-group">
+              <label for="server-ip-input" class="form-label">Server IP</label>
+              <input type="text" id="server-ip-input" class="form-input mono" placeholder="192.168.1.100" value="192.168.1.100" required>
+            </div>
+
+            <div class="form-group">
+              <label for="server-user-input" class="form-label">Username</label>
+              <input type="text" id="server-user-input" class="form-input mono" placeholder="ubuntu" value="ubuntu" required>
+            </div>
+
+            <div class="form-group">
+              <label for="server-pass-input" class="form-label">Password</label>
+              <input type="password" id="server-pass-input" class="form-input mono" placeholder="••••••••" value="soc_analyst_2026" required>
+            </div>
+
+            <div class="form-group">
+              <label for="server-path-input" class="form-label">Log file path</label>
+              <input type="text" id="server-path-input" class="form-input mono" placeholder="/var/log/network.csv" value="/var/log/network.csv" required>
+            </div>
+
+            <!-- Server Connection CTA Button -->
+            <button id="btn-connect-server" class="portal-cta-btn connect-cta" type="button">
+              <span id="btn-connect-text">Connect &amp; Monitor</span>
+            </button>
+          </form>
+
+        </div>
+
+      </div>
+
+      <!-- Supported Input Info Box -->
+      <div class="supported-input-box">
+        <div class="info-icon">&#x2139;</div>
+        <div class="info-content">
+          <span class="info-title">Supported input:</span>
+          <span class="info-text">CSV files containing network traffic features compatible with the detection model (Timestamp, Source IP/Port, Destination IP/Port, Attack Type, Model Confidence). Preprocessing engine automatically parses standard Snort/Suricata, Zeek, and CIC-IDS2017 formats.</span>
+        </div>
+      </div>
+
+      <!-- Portal Footer -->
+      <footer class="portal-footer">
+        <span>Network Intrusion Detection System</span>
+        <span class="footer-dot">•</span>
+        <span>AI Security Monitoring</span>
+        <span class="footer-dot">•</span>
+        <span>justdemo</span>
+      </footer>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       VIEW 2: MAIN SOC ANALYST DASHBOARD ("HOME")
+       ========================================================================= -->
+  <main id="view-dashboard" class="dashboard-viewport hidden" aria-label="SOC Analyst Live Console">
+    
+    <!-- Active Source Indicator Banner -->
+    <div class="active-source-banner">
+      <div class="source-info-left">
+        <span class="source-tag mono">DATA STREAM:</span>
+        <span id="active-source-name" class="source-name mono">CIC-IDS2017_Incursion.csv</span>
+      </div>
+      <button id="btn-switch-source" class="switch-source-link-btn" title="Upload or connect to a different log source">
+        &#x21BA; Change Traffic Source
+      </button>
+    </div>
+
+    <!-- Section 2: Risk Engine & Preprocessing Overview -->
+    <section class="risk-overview-panel" aria-label="Risk Engine and Preprocessing">
+      
+      <!-- Card 1: Fleet Risk Radial Score (0 - 100) -->
+      <div class="panel-card risk-score-card">
+        <div class="card-header">
+          <span class="card-title">CALCULATED NETWORK RISK SCORE</span>
+        </div>
+        <div class="risk-gauge-container">
+          <div class="radial-gauge-wrapper">
+            <svg class="radial-gauge-svg" viewBox="0 0 140 140">
+              <circle class="gauge-bg" cx="70" cy="70" r="56" />
+              <circle id="gauge-meter" class="gauge-fill" cx="70" cy="70" r="56" />
+            </svg>
+            <div class="gauge-center-content">
+              <div id="risk-score-value" class="gauge-score mono">42</div>
+              <div class="gauge-scale mono">/ 100 MAX</div>
+            </div>
+          </div>
+          <div class="risk-meta-column">
+            <div class="meta-row">
+              <span class="meta-label">PEAK ANOMALY 5M:</span>
+              <span id="peak-anomaly-val" class="meta-value mono">68 / 100</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">ACTIVE INGEST RATE:</span>
+              <span id="ingest-rate-val" class="meta-value mono">14.2 Kpkts/sec</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Traffic Preprocessing Breakdown -->
+      <div class="panel-card preprocessing-card">
+        <div class="card-header">
+          <span class="card-title">TRAFFIC PREPROCESSING INGESTION BREAKDOWN</span>
+        </div>
+
+        <div class="segmented-progress-track" title="Real-time flow ratio">
+          <div id="prog-normal" class="prog-segment normal-seg" style="width: 82%;"></div>
+          <div id="prog-suspicious" class="prog-segment suspicious-seg" style="width: 12%;"></div>
+          <div id="prog-malicious" class="prog-segment malicious-seg" style="width: 6%;"></div>
+        </div>
+
+        <div class="preprocessing-stats-grid">
+          <div class="stat-pill normal-stat">
+            <div class="pill-indicator"></div>
+            <div class="stat-info">
+              <span class="stat-label">NORMAL FLOWS</span>
+              <div class="stat-values">
+                <span id="pct-normal" class="stat-pct mono">82.0%</span>
+                <span id="count-normal" class="stat-raw mono">1,215,978</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-pill suspicious-stat">
+            <div class="pill-indicator"></div>
+            <div class="stat-info">
+              <span class="stat-label">SUSPICIOUS ANOMALY</span>
+              <div class="stat-values">
+                <span id="pct-suspicious" class="stat-pct mono">12.0%</span>
+                <span id="count-suspicious" class="stat-raw mono">177,948</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-pill malicious-stat">
+            <div class="pill-indicator"></div>
+            <div class="stat-info">
+              <span class="stat-label">MALICIOUS ATTACK</span>
+              <div class="stat-values">
+                <span id="pct-malicious" class="stat-pct mono">6.0%</span>
+                <span id="count-malicious" class="stat-raw mono">88,974</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Section 3: Live Traffic Ledger & Neural Classifier Stream -->
+    <section class="traffic-ledger-panel" aria-label="Live Traffic Ledger">
+      
+      <!-- Top Ledger Header and Controls Bar -->
+      <div class="ledger-header-bar">
+        <div class="ledger-title-block">
+          <h1 class="ledger-main-title">LIVE TRAFFIC</h1>
+        </div>
+
+        <div class="ledger-controls-cluster">
+          
+          <!-- Stream Pause / Resume Button -->
+          <button id="stream-toggle-btn" class="control-btn stream-pause-btn" title="Pause / Resume Ingestion Stream">
+            <span id="stream-btn-icon">&#x23F8;</span>
+            <span id="stream-btn-text">PAUSE STREAM</span>
+          </button>
+
+          <!-- Filter Pills: ALL TRAFFIC vs ATTACKS ONLY -->
+          <div class="filter-pills-group" role="group" aria-label="Traffic Filtering Mode">
+            <button id="filter-all-btn" class="filter-pill active" data-filter="ALL">
+              [ALL TRAFFIC]
+            </button>
+            <button id="filter-attacks-btn" class="filter-pill" data-filter="ATTACKS">
+              [ATTACKS ONLY]
+            </button>
+          </div>
+
+          <!-- Event Counter Badge -->
+          <div class="event-counter-badge mono">
+            <span id="events-count-display">SHOWING 0 EVENTS</span>
+          </div>
+
+          <!-- Quick Text Filter -->
+          <div class="search-filter-box">
+            <span class="search-icon">&#x2315;</span>
+            <input type="text" id="filter-search-input" placeholder="Filter IP, Port, Type..." aria-label="Filter events by IP or type">
+            <button id="clear-search-btn" class="clear-search-btn hidden" title="Clear filter">&times;</button>
+          </div>
+
+          <!-- Export Log CSV/JSON -->
+          <button id="export-logs-btn" class="control-btn export-btn" title="Export current flow buffer">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>EXPORT</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Live Traffic Table Wrapper with Strict Borders and Fixed Header -->
+      <div class="traffic-table-container">
+        <table class="traffic-table" id="traffic-table" aria-label="Real-time Network Flow Table">
+          <thead>
+            <tr>
+              <th scope="col" class="col-timestamp">TIMESTAMP</th>
+              <th scope="col" class="col-source">SOURCE IP:PORT</th>
+              <th scope="col" class="col-destination">DESTINATION IP:PORT</th>
+              <th scope="col" class="col-attack">ATTACK TYPE / PREDICTION</th>
+              <th scope="col" class="col-confidence">CONFIDENCE</th>
+              <th scope="col" class="col-action">INSPECT</th>
+            </tr>
+          </thead>
+          <tbody id="traffic-tbody">
+            <!-- Dynamically populated rows via app.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Status Footer -->
+      <div class="table-footer-status mono">
+        <div class="footer-left">
+          <span>BUFFER CAPACITY: 100 FLOWS (FIFO ROTATION)</span>
+          <span class="separator">|</span>
+          <span id="quarantine-status-line">ISOLATION RULES: 0 HOSTS ACTIVE</span>
+        </div>
+        <div class="footer-right">
+          <span class="legend-item"><span class="legend-color normal-color"></span> NORMAL FLOW</span>
+          <span class="legend-item"><span class="legend-color suspicious-color"></span> ANOMALOUS (#ff7f11)</span>
+          <span class="legend-item"><span class="legend-color malicious-color"></span> CRITICAL (#ff1b1c)</span>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Feature-Vector Packet Inspection Drawer -->
+  <aside id="inspection-drawer" class="inspection-drawer" aria-hidden="true" role="dialog" aria-labelledby="drawer-title">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <span class="drawer-pretitle mono">FEATURE-VECTOR DEEP PACKET INSPECTION</span>
+        <h2 id="drawer-title" class="drawer-title">FLOW-ID: #FK-9284102</h2>
+      </div>
+      <button id="drawer-close-btn" class="drawer-close-btn" aria-label="Close Inspection Drawer">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      
+      <!-- Severity Alert Banner -->
+      <div id="drawer-severity-banner" class="severity-banner malicious">
+        <div class="banner-icon-col">&#x26A0;</div>
+        <div class="banner-text-col">
+          <div id="drawer-severity-heading" class="banner-heading">ACTIVE MALICIOUS FLOW: SYN_FLOOD</div>
+          <div id="drawer-severity-desc" class="banner-desc mono">Threat severity score exceeds 90.00%. Immediate mitigation recommended.</div>
+        </div>
+      </div>
+
+      <!-- Quarantine Action Bar -->
+      <div class="drawer-actions-bar">
+        <button id="btn-quarantine-host" class="analyst-action-btn btn-quarantine">
+          <span class="btn-icon">&#x26D4;</span>
+          <span id="quarantine-btn-label">QUARANTINE HOST IP</span>
+        </button>
+        <button id="btn-copy-snort" class="analyst-action-btn btn-secondary">
+          <span class="btn-icon">&#x2398;</span>
+          <span>COPY SNORT RULE</span>
+        </button>
+        <button id="btn-export-pcap" class="analyst-action-btn btn-secondary">
+          <span class="btn-icon">&#x2913;</span>
+          <span>PCAP DUMP</span>
+        </button>
+      </div>
+
+      <!-- Inspection Details Accordion / Sections -->
+      <div class="inspection-section">
+        <div class="section-title mono">1.0 NETWORK FLOW TELEMETRY</div>
+        <div class="spec-grid">
+          <div class="spec-item">
+            <span class="spec-label">TIMESTAMP (UTC):</span>
+            <span id="detail-timestamp" class="spec-val mono">--:--:--.---</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">PROTOCOL:</span>
+            <span id="detail-protocol" class="spec-val mono">TCP (6)</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">FLOW DURATION:</span>
+            <span id="detail-duration" class="spec-val mono">412 ms</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">PACKET SIZE:</span>
+            <span id="detail-size" class="spec-val mono">1,460 Bytes</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">TTL (HOP LIMIT):</span>
+            <span id="detail-ttl" class="spec-val mono">54</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">ORIGIN GEO / ASN:</span>
+            <span id="detail-geo" class="spec-val mono">AS15169 (US / CLOUD-NET)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspection-section">
+        <div class="section-title mono">2.0 ENDPOINT VECTOR ROUTING</div>
+        <div class="routing-box">
+          <div class="route-node">
+            <span class="route-label">SOURCE ENDPOINT</span>
+            <span id="detail-src-ip" class="route-ip mono">172.16.0.42:55732</span>
+            <span id="detail-src-type" class="route-type mono">INTERNAL SUBNET (VLAN 10)</span>
+          </div>
+          <div class="route-arrow mono">&#x2794;</div>
+          <div class="route-node">
+            <span class="route-label">DESTINATION TARGET</span>
+            <span id="detail-dst-ip" class="route-ip mono">142.250.190.46:8080</span>
+            <span id="detail-dst-type" class="route-type mono">INGRESS EDGE PROXY</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspection-section">
+        <div class="section-title mono">3.0 TRANSPORT FLAGS & TCP ENGINE</div>
+        <div class="tcp-flags-cluster">
+          <div id="flag-syn" class="tcp-flag-pill">SYN</div>
+          <div id="flag-ack" class="tcp-flag-pill">ACK</div>
+          <div id="flag-rst" class="tcp-flag-pill">RST</div>
+          <div id="flag-fin" class="tcp-flag-pill">FIN</div>
+          <div id="flag-psh" class="tcp-flag-pill">PSH</div>
+          <div id="flag-urg" class="tcp-flag-pill">URG</div>
+        </div>
+        <div class="spec-grid mini-grid">
+          <div class="spec-item">
+            <span class="spec-label">WINDOW SIZE:</span>
+            <span id="detail-window-size" class="spec-val mono">65535</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">TCP SEQ NUM:</span>
+            <span id="detail-seq" class="spec-val mono">0x38BA91F0</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">TCP ACK NUM:</span>
+            <span id="detail-ack" class="spec-val mono">0x00000000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspection-section">
+        <div class="section-title mono">4.0 NEURAL FEATURE VECTOR & HEURISTICS</div>
+        
+        <div class="heuristic-bar-container">
+          <div class="h-bar-label-group">
+            <span class="h-label">SHANNON PAYLOAD ENTROPY</span>
+            <span id="detail-entropy" class="h-value mono">7.84 / 8.00 (HIGH OBSCURATION)</span>
+          </div>
+          <div class="h-track">
+            <div id="detail-entropy-bar" class="h-fill entropy-fill" style="width: 98%;"></div>
+          </div>
+        </div>
+
+        <div class="heuristic-bar-container">
+          <div class="h-bar-label-group">
+            <span class="h-label">FLOW ASYMMETRY RATIO</span>
+            <span id="detail-asymmetry" class="h-value mono">0.94 (UNIDIRECTIONAL FLOOD)</span>
+          </div>
+          <div class="h-track">
+            <div id="detail-asymmetry-bar" class="h-fill asymmetry-fill" style="width: 94%;"></div>
+          </div>
+        </div>
+
+        <div class="heuristic-bar-container">
+          <div class="h-bar-label-group">
+            <span class="h-label">MODEL CLASSIFIER CONFIDENCE</span>
+            <span id="detail-confidence-text" class="h-value mono">98.4% (RANDOM FOREST + CNN)</span>
+          </div>
+          <div class="h-track">
+            <div id="detail-confidence-bar" class="h-fill confidence-fill" style="width: 98.4%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspection-section">
+        <div class="section-title mono">5.0 RAW PACKET PAYLOAD PREVIEW (HEX / ASCII)</div>
+        <pre id="detail-raw-hex" class="hex-dump mono">0000  45 00 00 3c 1c 46 40 00 40 06 b1 e6 ac 10 00 2a  E..<@.@...*
+0010  8e fa be 2e d9 b4 1f 90 00 00 00 00 a0 02 72 10  ..............r.
+0020  3f 3c 00 00 02 04 05 b4 04 02 08 0a 01 23 45 67  ?<...........#Eg
+0030  00 00 00 00 01 03 03 07                          ........</pre>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Quarantined Hosts Modal -->
+  <div id="quarantine-modal" class="custom-modal" aria-hidden="true" role="dialog">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-cluster">
+          <span class="modal-icon">&#x26D4;</span>
+          <h3 class="modal-title">ACTIVE NETWORK ISOLATION MATRIX</h3>
+        </div>
+        <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc mono">Host addresses actively quarantined by firewall iptables hooks. Traffic dropped at edge interface.</p>
+        <div class="quarantine-table-wrap">
+          <table class="quarantine-table">
+            <thead>
+              <tr>
+                <th>QUARANTINED IP</th>
+                <th>REASON / ATTACK</th>
+                <th>TIMESTAMP</th>
+                <th>RULE STATUS</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="quarantine-tbody">
+              <!-- Dynamically populated or empty message -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-clear-all-btn" class="control-btn clear-quarantine-btn">LIFT ALL ISOLATIONS</button>
+        <button id="modal-done-btn" class="control-btn done-btn">CLOSE MATRIX</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
